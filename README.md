@@ -44,8 +44,8 @@ El sistema de autenticación se basa en **JWT**, con un enfoque de **tokens de a
 |--------|-----------------|--------------------------------------|
 | POST   | `/notes`        | Crea una nueva nota                  |
 | GET    | `/notes`        | Lista todas las notas del usuario   |
-| GET    | `/notes/{id}`   | Obtiene una nota por su ID          | TODO
-| PUT    | `/notes/{id}`   | Actualiza una nota existente         | TODO
+| GET    | `/notes/{id}`   | Obtiene una nota por su ID (TODO)    |
+| PUT    | `/notes/{id}`   | Actualiza una nota existente (TODO)         |
 | DELETE | `/notes/{id}`   | Elimina una nota                    |
 
 ---
