@@ -55,7 +55,7 @@ El sistema de autenticación se basa en **JWT**, con un enfoque de **tokens de a
 1. Clona el repositorio:
 
    ```bash
-   git clone https://github.com/tu-usuario/kotlin-notes-api.git
+   git clone https://github.com/BrandonFnts/spring_boot_kotlin.git
    cd kotlin-notes-api
    ```
 
