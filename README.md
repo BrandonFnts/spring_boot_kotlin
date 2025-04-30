@@ -73,7 +73,7 @@ El sistema de autenticación se basa en **JWT**, con un enfoque de **tokens de a
 
 - [x] Registro e inicio de sesión de usuarios  
 - [x] Tokens de acceso y refresco  
-- [] CRUD de notas por usuario  
+- [ ] CRUD de notas por usuario  
 - [ ] Paginación de notas  
 - [ ] Compartir notas con otros usuarios  
 - [ ] Tests automatizados  
