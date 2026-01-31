@@ -1,8 +1,8 @@
 package com.brangd.spring_boot_kotlin.security
 
-import com.brangd.spring_boot_kotlin.database.model.RefreshToken
-import com.brangd.spring_boot_kotlin.database.model.TokenPair
-import com.brangd.spring_boot_kotlin.database.model.UserModel
+import com.brangd.spring_boot_kotlin.database.models.RefreshToken
+import com.brangd.spring_boot_kotlin.database.models.TokenPair
+import com.brangd.spring_boot_kotlin.database.models.UserModel
 import com.brangd.spring_boot_kotlin.database.repository.RefreshTokenRepository
 import com.brangd.spring_boot_kotlin.database.repository.UserRepository
 import org.bson.types.ObjectId

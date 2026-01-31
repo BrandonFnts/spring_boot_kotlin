@@ -1,6 +1,6 @@
 package com.brangd.spring_boot_kotlin.database.repository
 
-import com.brangd.spring_boot_kotlin.database.model.UserModel
+import com.brangd.spring_boot_kotlin.database.models.UserModel
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.repository.MongoRepository
 

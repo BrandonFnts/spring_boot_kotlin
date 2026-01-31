@@ -1,4 +1,4 @@
-package com.brangd.spring_boot_kotlin.database.model
+package com.brangd.spring_boot_kotlin.database.models
 
 import com.brangd.spring_boot_kotlin.controllers.NoteController
 import org.bson.types.ObjectId

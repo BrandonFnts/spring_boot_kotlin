@@ -1,6 +1,6 @@
 package com.brangd.spring_boot_kotlin.controllers
 
-import com.brangd.spring_boot_kotlin.database.model.TokenPair
+import com.brangd.spring_boot_kotlin.database.models.TokenPair
 import com.brangd.spring_boot_kotlin.security.AuthService
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Email

@@ -17,6 +17,7 @@ class SecurityConfig(
     @Bean
     fun filterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
         return httpSecurity
+            .cors { it.configure(httpSecurity) }
             .csrf { csrf -> csrf.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { auth ->
@@ -25,6 +26,7 @@ class SecurityConfig(
                         DispatcherType.ERROR,
                         DispatcherType.FORWARD
                     ).permitAll()
+                    .anyRequest().authenticated()
             }
             .exceptionHandling { configurer ->
                 configurer.authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))

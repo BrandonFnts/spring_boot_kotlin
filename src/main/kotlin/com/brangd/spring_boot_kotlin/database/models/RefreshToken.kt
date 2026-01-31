@@ -1,4 +1,4 @@
-package com.brangd.spring_boot_kotlin.database.model
+package com.brangd.spring_boot_kotlin.database.models
 
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
