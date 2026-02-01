@@ -8,20 +8,10 @@ import java.time.Instant
 
 @Document("notes")
 data class NoteModel(
+    @Id val id: ObjectId = ObjectId.get(),
     val title: String,
     val content: String,
-    val color: Long,
+    val tags: List<ObjectId> = emptyList(),
     val createdAt: Instant,
-    val ownerId: ObjectId,
-    @Id val id: ObjectId = ObjectId.get()
+    val ownerId: ObjectId
 )
-
-fun NoteModel.toResponse():NoteController.NoteResponse {
-    return NoteController.NoteResponse(
-        id = id.toHexString(),
-        title = title,
-        content = content,
-        color = color,
-        createdAt = createdAt
-    )
-}

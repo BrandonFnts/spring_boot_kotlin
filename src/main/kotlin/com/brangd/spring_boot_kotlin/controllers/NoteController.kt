@@ -1,8 +1,8 @@
 package com.brangd.spring_boot_kotlin.controllers
 
 import com.brangd.spring_boot_kotlin.database.models.NoteModel
-import com.brangd.spring_boot_kotlin.database.models.toResponse
 import com.brangd.spring_boot_kotlin.database.repository.NoteRepository
+import com.brangd.spring_boot_kotlin.database.repository.TagRepository
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import org.bson.types.ObjectId
@@ -23,31 +23,25 @@ import java.time.Instant
 @RestController
 @RequestMapping("/notes")
 class NoteController(
-    private val noteRepository: NoteRepository
+    private val noteRepository: NoteRepository,
+    private val tagRepository: TagRepository
 ) {
-
     data class NoteRequest(
         @field:NotBlank(message = "Title can't be blank.")
         val title: String,
         val content: String,
-        val color: Long
+        val tagIds: List<String> = emptyList()
     )
 
     data class NoteResponse(
         val id: String,
         val title: String,
         val content: String,
-        val color: Long,
+        val tags: List<TagController.TagResponse>,
         val createdAt: Instant
     )
 
-    fun NoteModel.toResponse() = NoteResponse(
-        id = this.id.toHexString(),
-        title = this.title,
-        content = this.content,
-        color = this.color,
-        createdAt = this.createdAt
-    )
+    // --- HELPERS ---
 
     private fun getOwnerId(): ObjectId {
         val principal = SecurityContextHolder.getContext().authentication.principal as String
@@ -58,15 +52,46 @@ class NoteController(
         if (!ObjectId.isValid(noteId)) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid ID format")
         }
-
         val note = noteRepository.findById(ObjectId(noteId))
             .orElseThrow { ResponseStatusException(HttpStatus.NOT_FOUND, "Note not found") }
 
         if (note.ownerId != getOwnerId()) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, "Note not found")
         }
-
         return note
+    }
+
+    private fun mapNotesToResponse(notes: List<NoteModel>): List<NoteResponse> {
+        if (notes.isEmpty()) return emptyList()
+
+        val allTagIds = notes.flatMap { it.tags }.distinct()
+
+        val tagsMap = tagRepository.findAllById(allTagIds).associateBy { it.id }
+
+        return notes.map { note ->
+            val noteTags = note.tags.mapNotNull { tagId ->
+                tagsMap[tagId]?.let { tagModel ->
+                    TagController.TagResponse(
+                        id = tagModel.id.toHexString(),
+                        name = tagModel.name,
+                        color = tagModel.color,
+                        description = tagModel.description
+                    )
+                }
+            }
+
+            NoteResponse(
+                id = note.id.toHexString(),
+                title = note.title,
+                content = note.content,
+                tags = noteTags,
+                createdAt = note.createdAt
+            )
+        }
+    }
+
+    private fun mapNoteToResponse(note: NoteModel): NoteResponse {
+        return mapNotesToResponse(listOf(note)).first()
     }
 
     // --- ENDPOINTS ---
@@ -74,15 +99,17 @@ class NoteController(
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun create(@Valid @RequestBody body: NoteRequest): NoteResponse {
+        val tagObjectIds = body.tagIds.map { ObjectId(it) }
+
         val newNote = NoteModel(
             id = ObjectId.get(),
             title = body.title,
             content = body.content,
-            color = body.color,
+            tags = tagObjectIds,
             createdAt = Instant.now(),
             ownerId = getOwnerId()
         )
-        return noteRepository.save(newNote).toResponse()
+        return mapNoteToResponse(noteRepository.save(newNote))
     }
 
     @PutMapping("/{id}")
@@ -91,25 +118,26 @@ class NoteController(
         @Valid @RequestBody body: NoteRequest
     ): NoteResponse {
         val existingNote = findNoteAndValidateOwner(id)
+        val tagObjectIds = body.tagIds.map { ObjectId(it) }
 
         val updatedNote = existingNote.copy(
             title = body.title,
             content = body.content,
-            color = body.color
+            tags = tagObjectIds
         )
-
-        return noteRepository.save(updatedNote).toResponse()
+        return mapNoteToResponse(noteRepository.save(updatedNote))
     }
 
     @GetMapping("/{id}")
     fun getById(@PathVariable id: String): NoteResponse {
         val note = findNoteAndValidateOwner(id)
-        return note.toResponse()
+        return mapNoteToResponse(note)
     }
 
     @GetMapping
     fun getAllMyNotes(): List<NoteResponse> {
-        return noteRepository.findByOwnerId(getOwnerId()).map { it.toResponse() }
+        val notes = noteRepository.findByOwnerId(getOwnerId())
+        return mapNotesToResponse(notes)
     }
 
     @DeleteMapping("/{id}")
