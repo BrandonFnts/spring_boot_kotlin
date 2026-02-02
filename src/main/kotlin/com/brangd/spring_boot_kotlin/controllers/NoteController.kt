@@ -30,6 +30,7 @@ class NoteController(
         @field:NotBlank(message = "Title can't be blank.")
         val title: String,
         val content: String,
+        val color: String = "#CCCCCC",
         val tagIds: List<String> = emptyList()
     )
 
@@ -37,6 +38,7 @@ class NoteController(
         val id: String,
         val title: String,
         val content: String,
+        val color: String,
         val tags: List<TagController.TagResponse>,
         val createdAt: Instant
     )
@@ -84,6 +86,7 @@ class NoteController(
                 id = note.id.toHexString(),
                 title = note.title,
                 content = note.content,
+                color = note.color,
                 tags = noteTags,
                 createdAt = note.createdAt
             )
@@ -105,6 +108,7 @@ class NoteController(
             id = ObjectId.get(),
             title = body.title,
             content = body.content,
+            color = body.color,
             tags = tagObjectIds,
             createdAt = Instant.now(),
             ownerId = getOwnerId()
@@ -123,6 +127,7 @@ class NoteController(
         val updatedNote = existingNote.copy(
             title = body.title,
             content = body.content,
+            color = body.color,
             tags = tagObjectIds
         )
         return mapNoteToResponse(noteRepository.save(updatedNote))

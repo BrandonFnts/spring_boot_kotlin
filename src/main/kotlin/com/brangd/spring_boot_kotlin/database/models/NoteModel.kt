@@ -11,6 +11,7 @@ data class NoteModel(
     @Id val id: ObjectId = ObjectId.get(),
     val title: String,
     val content: String,
+    val color: String,
     val tags: List<ObjectId> = emptyList(),
     val createdAt: Instant,
     val ownerId: ObjectId
