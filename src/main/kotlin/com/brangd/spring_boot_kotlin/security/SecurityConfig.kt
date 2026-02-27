@@ -9,6 +9,9 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.HttpStatusEntryPoint
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 @Configuration
 class SecurityConfig(
@@ -17,8 +20,8 @@ class SecurityConfig(
     @Bean
     fun filterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
         return httpSecurity
-            .cors { it.configure(httpSecurity) }
-            .csrf { csrf -> csrf.disable() }
+            .cors {  }
+            .csrf { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { auth ->
                 auth.requestMatchers("/auth/**").permitAll()
@@ -33,5 +36,22 @@ class SecurityConfig(
             }
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter::class.java)
             .build()
+    }
+
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource {
+        val configuration = CorsConfiguration()
+
+        configuration.allowedOriginPatterns = listOf("*")
+
+        configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
+
+        configuration.allowedHeaders = listOf("*")
+
+        configuration.allowCredentials = true
+
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", configuration)
+        return source
     }
 }
